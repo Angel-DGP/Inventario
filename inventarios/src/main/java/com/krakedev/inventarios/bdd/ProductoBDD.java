@@ -51,4 +51,34 @@ public class ProductoBDD {
 
 		return prds;
 	}
+	public void crearPrd(Producto prd) throws InventarioException {
+		Connection CON = null;
+		try {
+			CON = ConexionBDD.obtenerConexion();
+			PreparedStatement ps = CON.prepareStatement("insert into producto(codigo_producto,nombre,udm,precio_venta,tiene_iva,coste,categoria_fk,stock) values (?,?,?,?,?,?,?,?);");
+			ps.setString(1, prd.getCodigo());
+			ps.setString(2, prd.getNombre());
+			ps.setString(3, prd.getUnidadMedida().getCodigo());
+			ps.setBigDecimal(4, prd.getPrecioVenta());
+			ps.setBoolean(5, prd.isHasIva());
+			ps.setBigDecimal(6, prd.getCoste());
+			ps.setInt(7, prd.getCategoria().getCodigo());
+			ps.setInt(8, prd.getStock());
+
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new InventarioException("Error al crear un producto: " + e.getMessage());
+		} catch (InventarioException e) {
+			throw e;
+		} finally {
+			if (CON != null) {
+				try {
+					CON.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 }
