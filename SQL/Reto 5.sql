@@ -104,12 +104,13 @@ create table proveedores(
 	nombre varchar(100) not null,
 	telefono char(10) not null,
 	correo varchar(100) not null,
+	direccion varchar(150) not null,
 	constraint proveedores_pk primary key (identificador),
 	constraint proveedores_fk foreign key (tipo_documento) references tipo_documento(codigo)
 );
-insert into proveedores (identificador,tipo_documento,nombre,telefono,correo) values 
-('1792285747','C','SANTIAGO MOSQUERA','0998765432','mosquera.santiago@gmail.com'),
-('1792285123','R','PAPAS FEKAS','0998765243','fekas.papas.muy@gmail.com');
+insert into proveedores (identificador,tipo_documento,nombre,telefono,correo,direccion) values 
+('1792285747','C','SANTIAGO MOSQUERA','0998765432','mosquera.santiago@gmail.com','Cumbaya'),
+('1792285123','R','PAPAS FEKAS','0998765243','fekas.papas.muy@gmail.com','Cumbaca');
 select * from proveedores;
 /*END PROVEEDORES*/
 
