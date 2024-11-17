@@ -21,10 +21,10 @@ public class PedidosBDD {
 		int codigoCabecera = 0;
 		try {
 			CON = ConexionBDD.obtenerConexion();
+			PreparedStatement ps2 = null;
 			PreparedStatement ps = CON.prepareStatement(
 					"insert into cabecera_pedido (proveedor,fecha,estado) values (?,?,?);",
 					Statement.RETURN_GENERATED_KEYS);
-			PreparedStatement ps2 = null;
 			ps.setString(1, pd.getProveedor().getIdentificador());
 			ps.setDate(2, new Date(new java.util.Date().getTime()));
 			ps.setString(3, "S");
@@ -65,5 +65,45 @@ public class PedidosBDD {
 			}
 		}
 	}
+	
+//Mi codigo tiene que recibir el pedido a modificar, y en la base de datos cambiar los valores correspondientes
+	public void recibir(Pedido pd) throws InventarioException {
+		Connection CON = null;
+		try {
+			CON = ConexionBDD.obtenerConexion();
+			PreparedStatement ps = CON.prepareStatement(
+					"update cabecera_pedido set estado= 'R' where numero=?;");
+			PreparedStatement ps2 = null;
+			ps.setInt(1, pd.getNumero());
+			ps.executeUpdate();
 
+			ArrayList<DetallePedido> dp = pd.getDetalles();
+			DetallePedido deP;
+			for (int i =0; i<dp.size();i++) {
+				deP = dp.get(i);
+				ps2	= CON.prepareStatement(
+						"update detalle_pedido set cantidad_recibida = ?, subtotal = ? where codigo = ? and producto = ?;");
+				ps2.setInt(1, deP.getCantidadRecibida());
+				ps2.setBigDecimal(2, deP.getProducto().getPrecioVenta().multiply(new BigDecimal(deP.getCantidadRecibida())));
+				ps2.setInt(3, deP.getCodigo());
+				ps2.setString(4, deP.getProducto().getCodigo());
+				ps2.executeUpdate();
+				}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new InventarioException("Error al crear un producto: " + e.getMessage());
+		} catch (InventarioException e) {
+			throw e;
+		} finally {
+			if (CON != null) {
+				try {
+					CON.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 }
