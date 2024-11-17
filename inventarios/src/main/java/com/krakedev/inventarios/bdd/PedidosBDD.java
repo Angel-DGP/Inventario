@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import com.krakedev.inventarios.entidades.DetallePedido;
@@ -52,7 +53,7 @@ public class PedidosBDD {
 			System.out.println("Codigo generado>>" + codigoCabecera);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new InventarioException("Error al crear un producto: " + e.getMessage());
+			throw new InventarioException("Error al crear un pedido: " + e.getMessage());
 		} catch (InventarioException e) {
 			throw e;
 		} finally {
@@ -74,6 +75,8 @@ public class PedidosBDD {
 			PreparedStatement ps = CON.prepareStatement(
 					"update cabecera_pedido set estado= 'R' where numero=?;");
 			PreparedStatement ps2 = null;
+			PreparedStatement psH = null;
+			Timestamp fechaHoraActual = new Timestamp(new java.util.Date().getTime());
 			ps.setInt(1, pd.getNumero());
 			ps.executeUpdate();
 
@@ -87,12 +90,19 @@ public class PedidosBDD {
 				ps2.setBigDecimal(2, deP.getProducto().getPrecioVenta().multiply(new BigDecimal(deP.getCantidadRecibida())));
 				ps2.setInt(3, deP.getCodigo());
 				ps2.setString(4, deP.getProducto().getCodigo());
+				psH = CON.prepareStatement(
+						"insert into historial_stock(fecha,referencia,producto,cantidad) values (?,?,?,?)");
+				psH.setTimestamp(1, fechaHoraActual);
+				psH.setString(2, "Pedido" + pd.getNumero());
+				psH.setString(3, deP.getProducto().getCodigo());
+				psH.setInt(4, deP.getCantidadRecibida());
+				psH.executeUpdate();
 				ps2.executeUpdate();
 				}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			throw new InventarioException("Error al crear un producto: " + e.getMessage());
+			throw new InventarioException("Error al recibir el pedido: " + e.getMessage());
 		} catch (InventarioException e) {
 			throw e;
 		} finally {

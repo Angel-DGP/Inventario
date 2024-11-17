@@ -40,18 +40,4 @@ public class ServiciosPedido {
 			return Response.serverError().build();
 		}
 	}
-	/*@Path("recibido")
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response Actualizar(Pedido pv){
-		PedidoBDD pvBDD= new PedidoBDD();
-		try {
-			pvBDD.PedidoRecibido(pv);
-			return Response.ok().build();
-		} catch (krakedevException e) {
-			e.printStackTrace();
-			return Response.serverError().build();
-		}
-		
-	}*/
 }
