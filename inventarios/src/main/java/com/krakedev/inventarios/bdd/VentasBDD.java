@@ -69,11 +69,12 @@ public class VentasBDD {
 				ps2.executeUpdate();
 				}
 			psA = CON.prepareStatement(
-					"update cabecera_venta set total_sin_iva = ?, iva =?,total=?");
+					"update cabecera_venta set total_sin_iva = ?, iva =?,total=? where codigo = ?");
 			psA.setBigDecimal(1, totalSinIva);
 			psA.setBigDecimal(2, iva);
 			total = totalSinIva.add(iva);
 			psA.setBigDecimal(3, total);
+			psA.setInt(4, codigoCabecera);
 			psA.executeUpdate();
 			
 			System.out.println("Codigo generado>>" + codigoCabecera);
